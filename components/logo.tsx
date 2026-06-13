@@ -10,7 +10,7 @@ export function Logo() {
         alt="Renee Dugas Nugent for District Judge"
         width={2048}
         height={680}
-        className="h-auto w-[190px] md:w-[260px] lg:w-[310px]"
+        className="h-auto w-[150px] sm:w-[190px] md:w-[240px] lg:w-[270px]"
         priority
       />
     </Link>

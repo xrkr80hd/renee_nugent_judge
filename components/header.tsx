@@ -21,15 +21,16 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-primary/10 bg-background/92 backdrop-blur-xl">
-      <div className="container flex min-h-16 items-center justify-between gap-4 md:min-h-20">
+    <header className="sticky top-0 z-40 border-b border-secondary/30 bg-white/96 shadow-sm backdrop-blur-xl">
+      <div className="h-1 bg-primary" aria-hidden="true" />
+      <div className="container flex min-h-16 items-center justify-between gap-3 md:min-h-[76px]">
         <Logo />
-        <nav className="hidden items-center gap-6 lg:flex" aria-label="Main navigation">
+        <nav className="hidden items-center gap-1 rounded-full border border-primary/10 bg-background/70 p-1 shadow-sm lg:flex" aria-label="Main navigation">
           {nav.map(([label, href]) => (
             <Link
               key={href}
               href={href}
-              className="text-xs font-bold uppercase tracking-[0.11em] text-foreground/72 hover:text-foreground xl:text-sm"
+              className="rounded-full px-3 py-2 text-xs font-bold uppercase tracking-[0.09em] text-foreground/72 transition-colors hover:bg-primary hover:text-white xl:px-4"
             >
               {label}
             </Link>
@@ -46,7 +47,7 @@ export function Header() {
         {menuOpen ? (
           <button
             type="button"
-            className="inline-flex size-11 items-center justify-center rounded-md border border-primary/20 bg-white text-primary shadow-sm transition-colors hover:bg-muted lg:hidden"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-secondary/45 bg-primary text-white shadow-sm transition-colors hover:bg-primary/92 lg:hidden"
             aria-controls="mobile-navigation"
             aria-expanded="true"
             aria-label="Close navigation menu"
@@ -57,7 +58,7 @@ export function Header() {
         ) : (
           <button
             type="button"
-            className="inline-flex size-11 items-center justify-center rounded-md border border-primary/20 bg-white text-primary shadow-sm transition-colors hover:bg-muted lg:hidden"
+            className="inline-flex size-11 items-center justify-center rounded-full border border-secondary/45 bg-primary text-white shadow-sm transition-colors hover:bg-primary/92 lg:hidden"
             aria-controls="mobile-navigation"
             aria-expanded="false"
             aria-label="Open navigation menu"
@@ -68,32 +69,32 @@ export function Header() {
         )}
       </div>
       {menuOpen ? (
-        <div id="mobile-navigation" className="border-t border-primary/10 bg-background/98 shadow-lg lg:hidden">
-          <nav className="container flex justify-center py-2" aria-label="Mobile navigation">
-            <div className="grid w-full max-w-[18rem] grid-cols-2 gap-1 rounded-md border border-primary/10 bg-white p-2 shadow-sm">
+        <div id="mobile-navigation" className="border-t border-secondary/50 bg-[#d8ecf7]/95 shadow-judicial backdrop-blur-xl lg:hidden">
+          <div className="container py-5">
+            <nav className="mx-auto flex max-w-xs flex-col items-center gap-2" aria-label="Mobile navigation">
               {mobileNav.map(([label, href]) => (
                 <Link
                   key={href}
                   href={href}
-                  className="rounded-md px-2 py-2 text-center text-[0.7rem] font-bold uppercase tracking-[0.09em] text-foreground/78 transition-colors hover:bg-muted hover:text-foreground"
+                  className="w-full rounded-md border border-primary/15 bg-white/55 px-4 py-3 text-center text-sm font-bold uppercase tracking-[0.12em] text-primary shadow-sm transition-colors hover:border-secondary hover:bg-secondary hover:text-secondary-foreground"
                   onClick={() => setMenuOpen(false)}
                 >
                   {label}
                 </Link>
               ))}
+            </nav>
+            <div className="mx-auto mt-4 flex max-w-xs flex-col gap-2">
+              <Button asChild variant="secondary">
+                <Link href="/volunteer" onClick={() => setMenuOpen(false)}>
+                  Volunteer
+                </Link>
+              </Button>
+              <Button asChild className="bg-white text-primary hover:bg-white/90">
+                <Link href="/donate" onClick={() => setMenuOpen(false)}>
+                  Donate
+                </Link>
+              </Button>
             </div>
-          </nav>
-          <div className="container mx-auto grid max-w-[18rem] grid-cols-2 gap-2 pb-3">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/donate" onClick={() => setMenuOpen(false)}>
-                Donate
-              </Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link href="/volunteer" onClick={() => setMenuOpen(false)}>
-                Volunteer
-              </Link>
-            </Button>
           </div>
         </div>
       ) : null}
