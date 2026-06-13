@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 42 30% 96%;
+  --foreground: 213 69% 15%;
+  --card: 0 0% 100%;
+  --card-foreground: 213 69% 15%;
+  --primary: 213 69% 19%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 41 48% 57%;
+  --secondary-foreground: 213 69% 15%;
+  --muted: 40 27% 91%;
+  --muted-foreground: 213 20% 38%;
+  --accent: 0 0% 100%;
+  --accent-foreground: 213 69% 15%;
+  --border: 40 22% 82%;
+  --input: 40 22% 82%;
+  --ring: 41 48% 57%;
+  --radius: 0.5rem;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgba(249, 247, 241, 0.96), rgba(248, 246, 242, 1) 42%, rgba(238, 243, 244, 0.72)),
+    radial-gradient(circle at 20% 0%, rgba(200, 164, 90, 0.2), transparent 30%),
+    radial-gradient(circle at 84% 18%, rgba(112, 154, 164, 0.16), transparent 28%);
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans), Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
+.gold-rule {
+  background: linear-gradient(90deg, transparent, #c8a45a, transparent);
+}
+
+.civic-texture {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 18% 14%, rgba(200, 164, 90, 0.28), transparent 28%),
+    radial-gradient(circle at 82% 22%, rgba(106, 148, 158, 0.18), transparent 30%);
+  background-size: 42px 42px, 42px 42px, auto, auto;
+}
+
+.fine-paper {
+  background-image:
+    linear-gradient(135deg, rgba(15, 45, 82, 0.04) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(15, 45, 82, 0.035) 25%, transparent 25%);
+  background-position: 0 0, 12px 12px;
+  background-size: 24px 24px;
+}
