@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Volunteer {
@@ -15,6 +16,9 @@ model Volunteer {
   city      String?
   interests String
   createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([email])
 }
 
 model ContactSubmission {
@@ -24,6 +28,9 @@ model ContactSubmission {
   phone     String?
   message   String
   createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([email])
 }
 
 model Event {
@@ -35,6 +42,9 @@ model Event {
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([startsAt])
+  @@index([isPublished])
 }
 
 model Endorsement {
@@ -46,6 +56,9 @@ model Endorsement {
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isPublished])
 }
 
 model NewsPost {
@@ -57,6 +70,8 @@ model NewsPost {
   isPublished Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([isPublished])
 }
 
 model SiteSetting {

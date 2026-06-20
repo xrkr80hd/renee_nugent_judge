@@ -8,7 +8,7 @@ Production-ready campaign website for Renee Dugas Nugent, candidate for District
 - TypeScript
 - Tailwind CSS
 - shadcn-style local UI components
-- Prisma with SQLite for editable content and form submissions
+- Prisma with Supabase Postgres for editable content and form submissions
 - Server Actions for forms and admin edits
 
 ## Local Setup
@@ -21,14 +21,16 @@ Production-ready campaign website for Renee Dugas Nugent, candidate for District
 npm install
 ```
 
-4. Create the database and seed starter content:
+1. Set `DATABASE_URL` and `DIRECT_URL` from the Supabase project.
+
+2. Create the database and seed starter content:
 
 ```bash
 npm run db:push
 npm run db:seed
 ```
 
-5. Start the site:
+1. Start the site:
 
 ```bash
 npm run dev
@@ -58,8 +60,9 @@ The first version uses the supplied campaign questionnaire for biography, qualif
 For Vercel deployment:
 
 1. Set environment variables from `.env.example`.
-2. Use a production database provider supported by Prisma.
-3. Run `prisma migrate deploy` or `prisma db push` as part of deployment setup.
+2. Copy the pooled and direct Postgres connection strings from Supabase into `DATABASE_URL` and `DIRECT_URL`.
+3. Apply the SQL in `supabase/migrations/20260620_init_campaign_backend.sql` to a fresh Supabase project, or run `npm run db:push` against the project.
 4. Set `NEXT_PUBLIC_SITE_URL` to the production URL.
+5. Set the same database environment variables in Vercel before deploying.
 
 Stripe donation checkout variables are prepared but checkout is intentionally disabled until the campaign has approved payment credentials and compliance language.
