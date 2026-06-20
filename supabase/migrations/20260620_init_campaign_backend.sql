@@ -77,18 +77,6 @@ create table if not exists public."SiteSetting" (
 
 alter table public."SiteSetting" enable row level security;
 
-insert into public."Event" (id, title, "startsAt", location, description, "isPublished")
-values
-  ('seed-event-1', 'Grant Parish Meet and Greet', '2026-07-18T23:00:00Z', 'Grant Parish, Louisiana', 'A community conversation with Renee Dugas Nugent. Details to be announced.', true),
-  ('seed-event-2', 'Campaign Volunteer Evening', '2026-08-06T22:30:00Z', 'Campaign Headquarters', 'Help prepare yard signs, voter outreach materials, and event support.', true)
-on conflict (id) do update set
-  title = excluded.title,
-  "startsAt" = excluded."startsAt",
-  location = excluded.location,
-  description = excluded.description,
-  "isPublished" = excluded."isPublished",
-  "updatedAt" = now();
-
 insert into public."SiteSetting" (key, value)
 values
   ('homepageHeadline', 'Candidate for District Judge'),

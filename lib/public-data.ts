@@ -27,18 +27,7 @@ export async function getPublishedEvents(take?: number) {
       take
     });
   } catch {
-    return [
-      {
-        id: "fallback-event",
-        title: "Campaign Events Coming Soon",
-        startsAt: new Date("2026-11-03T08:00:00-06:00"),
-        location: "Grant Parish, Louisiana",
-        description: "Meet and greet dates, speaking engagements, and campaign events will be posted soon.",
-        isPublished: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ];
+    return [];
   }
 }
 

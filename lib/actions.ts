@@ -1,10 +1,10 @@
 "use server";
 
+import { clearAdminSession, createAdminSession, isAdminAuthenticated, validAdminPassword, validAdminUsername } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { createAdminSession, clearAdminSession, isAdminAuthenticated, validAdminPassword, validAdminUsername } from "@/lib/auth";
-import { prisma } from "@/lib/db";
 
 const volunteerSchema = z.object({
   name: z.string().min(2),
@@ -89,6 +89,19 @@ export async function saveEventAction(formData: FormData) {
     await prisma.event.update({ where: { id }, data });
   } else {
     await prisma.event.create({ data });
+  }
+
+  revalidatePath("/events");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function deleteEventAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+
+  if (id) {
+    await prisma.event.delete({ where: { id } });
   }
 
   revalidatePath("/events");

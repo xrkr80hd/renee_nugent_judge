@@ -1,15 +1,17 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { Section, SectionHeading } from "@/components/section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Section, SectionHeading } from "@/components/section";
+import { deleteEventAction, loginAction, logoutAction, saveEndorsementAction, saveEventAction, saveSettingAction } from "@/lib/actions";
 import { isAdminAuthenticated } from "@/lib/auth";
-import { loginAction, logoutAction, saveEndorsementAction, saveEventAction, saveSettingAction } from "@/lib/actions";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
+
+function toDateTimeLocal(value: Date) {
+  return value.toISOString().slice(0, 16);
+}
 
 export default async function AdminPage({
   searchParams
@@ -123,12 +125,30 @@ export default async function AdminPage({
               <CardTitle>Volunteer Signups</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <Button asChild variant="outline"><Link href="/admin/export/volunteers">Export CSV</Link></Button>
               {volunteers.map((volunteer) => (
-                <div key={volunteer.id} className="border-b pb-3 text-sm last:border-b-0">
-                  <p className="font-semibold">{volunteer.name}</p>
-                  <p className="text-muted-foreground">{volunteer.email} {volunteer.phone ? `| ${volunteer.phone}` : ""}</p>
-                  <p className="text-muted-foreground">{volunteer.interests}</p>
+                <div key={volunteer.id} className="rounded-md border p-4 text-sm">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Name</p>
+                      <p>{volunteer.name}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Email</p>
+                      <p>{volunteer.email}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Phone</p>
+                      <p>{volunteer.phone || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">City</p>
+                      <p>{volunteer.city || "Not provided"}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <p className="font-semibold text-muted-foreground">Volunteer For</p>
+                    <p>{volunteer.interests}</p>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -139,24 +159,70 @@ export default async function AdminPage({
               <CardTitle>Contact Submissions</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <Button asChild variant="outline"><Link href="/admin/export/contacts">Export CSV</Link></Button>
               {contacts.map((contact) => (
-                <div key={contact.id} className="border-b pb-3 text-sm last:border-b-0">
-                  <p className="font-semibold">{contact.name}</p>
-                  <p className="text-muted-foreground">{contact.email} {contact.phone ? `| ${contact.phone}` : ""}</p>
-                  <p className="mt-2 text-muted-foreground">{contact.message}</p>
+                <div key={contact.id} className="rounded-md border p-4 text-sm">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Name</p>
+                      <p>{contact.name}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Email</p>
+                      <p>{contact.email}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Phone</p>
+                      <p>{contact.phone || "Not provided"}</p>
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <p className="font-semibold text-muted-foreground">Message</p>
+                    <p>{contact.message}</p>
+                  </div>
                 </div>
               ))}
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Current Events</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-3">
+            <CardContent className="grid gap-4">
               {events.map((event) => (
-                <p key={event.id} className="text-sm"><span className="font-semibold">{formatDate(event.startsAt)}</span> {event.title}</p>
+                <div key={event.id} className="rounded-md border p-4">
+                  <form action={saveEventAction} className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+                    <input type="hidden" name="id" value={event.id} />
+                    <div className="flex flex-col gap-2 lg:col-span-2">
+                      <Label htmlFor={`event-title-${event.id}`}>Event Title</Label>
+                      <Input id={`event-title-${event.id}`} name="title" defaultValue={event.title} required />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor={`event-startsAt-${event.id}`}>Date and Time</Label>
+                      <Input id={`event-startsAt-${event.id}`} name="startsAt" type="datetime-local" defaultValue={toDateTimeLocal(event.startsAt)} required />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label htmlFor={`event-location-${event.id}`}>Location</Label>
+                      <Input id={`event-location-${event.id}`} name="location" defaultValue={event.location} required />
+                    </div>
+                    <div className="flex flex-col gap-2 lg:col-span-2">
+                      <Label htmlFor={`event-description-${event.id}`}>Description</Label>
+                      <Textarea id={`event-description-${event.id}`} name="description" defaultValue={event.description} required />
+                    </div>
+                    <label className="flex items-center gap-3 text-sm font-semibold lg:col-span-2">
+                      <input name="isPublished" type="checkbox" defaultChecked={event.isPublished} className="size-4 accent-[#0F2D52]" />
+                      Published
+                    </label>
+                    <div className="flex flex-wrap gap-3 lg:col-span-2">
+                      <Button type="submit" variant="outline">Update Event</Button>
+                    </div>
+                  </form>
+                  <form action={deleteEventAction} className="mt-3">
+                    <input type="hidden" name="id" value={event.id} />
+                    <Button type="submit" variant="outline">Delete Event</Button>
+                  </form>
+                  <p className="mt-3 text-sm text-muted-foreground">{formatDate(event.startsAt)}</p>
+                </div>
               ))}
             </CardContent>
           </Card>
