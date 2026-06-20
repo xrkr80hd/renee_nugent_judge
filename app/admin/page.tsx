@@ -13,6 +13,10 @@ function toDateTimeLocal(value: Date) {
   return value.toISOString().slice(0, 16);
 }
 
+function settingValue(settings: Array<{ key: string; value: string }>, key: string) {
+  return settings.find((setting) => setting.key === key)?.value ?? "Not set";
+}
+
 export default async function AdminPage({
   searchParams
 }: Readonly<{ searchParams: Promise<{ error?: string }> }>) {
@@ -55,6 +59,9 @@ export default async function AdminPage({
     prisma.siteSetting.findMany({ orderBy: { key: "asc" } })
   ]);
 
+  const publishedEvents = events.filter((event) => event.isPublished);
+  const publishedEndorsements = endorsements.filter((endorsement) => endorsement.isPublished);
+
   return (
     <Section>
       <div className="container">
@@ -66,6 +73,50 @@ export default async function AdminPage({
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Published on Site</CardTitle>
+            </CardHeader>
+            <CardContent className="grid gap-6 md:grid-cols-3">
+              <div className="rounded-md border p-4 text-sm">
+                <p className="font-semibold text-muted-foreground">Homepage Headline</p>
+                <p className="mt-2 font-semibold">{settingValue(settings, "homepageHeadline")}</p>
+                <p className="mt-4 font-semibold text-muted-foreground">Mission Statement</p>
+                <p className="mt-2 leading-6">{settingValue(settings, "missionStatement")}</p>
+              </div>
+              <div className="rounded-md border p-4 text-sm">
+                <p className="font-semibold text-muted-foreground">Published Events</p>
+                {publishedEvents.length ? (
+                  <div className="mt-3 flex flex-col gap-3">
+                    {publishedEvents.map((event) => (
+                      <div key={event.id}>
+                        <p className="font-semibold">{event.title}</p>
+                        <p className="text-muted-foreground">{formatDate(event.startsAt)}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-muted-foreground">No events are currently published.</p>
+                )}
+              </div>
+              <div className="rounded-md border p-4 text-sm">
+                <p className="font-semibold text-muted-foreground">Published Endorsements</p>
+                {publishedEndorsements.length ? (
+                  <div className="mt-3 flex flex-col gap-3">
+                    {publishedEndorsements.map((endorsement) => (
+                      <div key={endorsement.id}>
+                        <p className="font-semibold">{endorsement.name}</p>
+                        <p className="text-muted-foreground">{endorsement.role}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-3 text-muted-foreground">No endorsements are currently published.</p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Add Event</CardTitle>
