@@ -23,7 +23,7 @@ export async function getPublishedEvents(take?: number) {
   try {
     return await prisma.event.findMany({
       where: { isPublished: true, startsAt: { gte: new Date() } },
-      orderBy: { startsAt: "asc" },
+      orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }],
       take
     });
   } catch {
@@ -35,7 +35,7 @@ export async function getPublishedEndorsements() {
   try {
     return await prisma.endorsement.findMany({
       where: { isPublished: true },
-      orderBy: [{ category: "asc" }, { createdAt: "desc" }]
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }]
     });
   } catch {
     return [];

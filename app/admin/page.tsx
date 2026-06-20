@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { deleteEventAction, loginAction, logoutAction, saveEndorsementAction, saveEventAction, saveSettingAction } from "@/lib/actions";
+import { deleteEndorsementAction, deleteEventAction, loginAction, logoutAction, moveEndorsementAction, moveEventAction, saveEndorsementAction, saveEventAction, saveSettingAction } from "@/lib/actions";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
@@ -15,6 +15,21 @@ function toDateTimeLocal(value: Date) {
 
 function settingValue(settings: Array<{ key: string; value: string }>, key: string) {
   return settings.find((setting) => setting.key === key)?.value ?? "Not set";
+}
+
+function AccordionSection({
+  title,
+  defaultOpen = false,
+  children
+}: Readonly<{ title: string; defaultOpen?: boolean; children: React.ReactNode }>) {
+  return (
+    <details className="rounded-md border bg-white" open={defaultOpen}>
+      <summary className="cursor-pointer list-none px-6 py-4 font-serif text-xl font-semibold">
+        {title}
+      </summary>
+      <div className="border-t px-6 py-6">{children}</div>
+    </details>
+  );
 }
 
 export default async function AdminPage({
@@ -54,8 +69,8 @@ export default async function AdminPage({
   const [volunteers, contacts, events, endorsements, settings] = await Promise.all([
     prisma.volunteer.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
     prisma.contactSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
-    prisma.event.findMany({ orderBy: { startsAt: "asc" }, take: 20 }),
-    prisma.endorsement.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
+    prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], take: 20 }),
+    prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], take: 20 }),
     prisma.siteSetting.findMany({ orderBy: { key: "asc" } })
   ]);
 
@@ -72,12 +87,9 @@ export default async function AdminPage({
           </form>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Published on Site</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6">
+          <AccordionSection title="Published on Site" defaultOpen>
+            <div className="grid gap-6 md:grid-cols-3">
               <div className="rounded-md border p-4 text-sm">
                 <p className="font-semibold text-muted-foreground">Homepage Headline</p>
                 <p className="mt-2 font-semibold">{settingValue(settings, "homepageHeadline")}</p>
@@ -114,52 +126,141 @@ export default async function AdminPage({
                   <p className="mt-3 text-muted-foreground">No endorsements are currently published.</p>
                 )}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </AccordionSection>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Add Event</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <AccordionSection title="Event Management" defaultOpen>
+            <Card>
+              <CardHeader>
+                <CardTitle>Add Event</CardTitle>
+              </CardHeader>
+              <CardContent>
               <form action={saveEventAction} className="flex flex-col gap-4">
                 <Input name="title" placeholder="Event title" required />
                 <Input name="startsAt" type="datetime-local" required />
                 <Input name="location" placeholder="Location" required />
                 <Textarea name="description" placeholder="Description" required />
-                <label className="flex items-center gap-3 text-sm font-semibold">
-                  <input name="isPublished" type="checkbox" defaultChecked className="size-4 accent-[#0F2D52]" />
-                  Published
-                </label>
                 <Button type="submit">Save Event</Button>
               </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Add Endorsement</CardTitle>
-            </CardHeader>
-            <CardContent>
+            <div className="mt-6 rounded-md border p-4">
+              <h3 className="font-serif text-xl font-semibold">Posted Events</h3>
+              <div className="mt-4 grid gap-4">
+                {events.map((event, index) => (
+                  <div key={event.id} className="rounded-md border p-4">
+                    <form action={saveEventAction} className="grid gap-4 lg:grid-cols-[1fr_1fr]">
+                      <input type="hidden" name="id" value={event.id} />
+                      <div className="flex flex-col gap-2 lg:col-span-2">
+                        <Label htmlFor={`event-title-${event.id}`}>Event Title</Label>
+                        <Input id={`event-title-${event.id}`} name="title" defaultValue={event.title} required />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor={`event-startsAt-${event.id}`}>Date and Time</Label>
+                        <Input id={`event-startsAt-${event.id}`} name="startsAt" type="datetime-local" defaultValue={toDateTimeLocal(event.startsAt)} required />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor={`event-location-${event.id}`}>Location</Label>
+                        <Input id={`event-location-${event.id}`} name="location" defaultValue={event.location} required />
+                      </div>
+                      <div className="flex flex-col gap-2 lg:col-span-2">
+                        <Label htmlFor={`event-description-${event.id}`}>Description</Label>
+                        <Textarea id={`event-description-${event.id}`} name="description" defaultValue={event.description} required />
+                      </div>
+                      <div className="flex flex-wrap gap-3 lg:col-span-2">
+                        <Button type="submit" variant="outline">Edit Event</Button>
+                      </div>
+                    </form>
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      <form action={moveEventAction}>
+                        <input type="hidden" name="id" value={event.id} />
+                        <input type="hidden" name="direction" value="up" />
+                        <Button type="submit" variant="outline" disabled={index === 0}>Move Up</Button>
+                      </form>
+                      <form action={moveEventAction}>
+                        <input type="hidden" name="id" value={event.id} />
+                        <input type="hidden" name="direction" value="down" />
+                        <Button type="submit" variant="outline" disabled={index === events.length - 1}>Move Down</Button>
+                      </form>
+                      <form action={deleteEventAction}>
+                        <input type="hidden" name="id" value={event.id} />
+                        <Button type="submit" variant="outline">Delete Event</Button>
+                      </form>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </AccordionSection>
+
+          <AccordionSection title="Endorsement Management">
+            <Card>
+              <CardHeader>
+                <CardTitle>Add Endorsement</CardTitle>
+              </CardHeader>
+              <CardContent>
               <form action={saveEndorsementAction} className="flex flex-col gap-4">
                 <Input name="name" placeholder="Name" required />
                 <Input name="role" placeholder="Role or organization" required />
                 <Input name="category" placeholder="Category" defaultValue="Community Supporter" />
                 <Textarea name="quote" placeholder="Testimonial" required />
-                <label className="flex items-center gap-3 text-sm font-semibold">
-                  <input name="isPublished" type="checkbox" defaultChecked className="size-4 accent-[#0F2D52]" />
-                  Published
-                </label>
                 <Button type="submit">Save Endorsement</Button>
               </form>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Editable Site Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4 md:grid-cols-3">
+            <div className="mt-6 rounded-md border p-4">
+              <h3 className="font-serif text-xl font-semibold">Posted Endorsements</h3>
+              <div className="mt-4 grid gap-4">
+                {endorsements.map((endorsement, index) => (
+                  <div key={endorsement.id} className="rounded-md border p-4">
+                    <form action={saveEndorsementAction} className="grid gap-4">
+                      <input type="hidden" name="id" value={endorsement.id} />
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor={`endorsement-name-${endorsement.id}`}>Name</Label>
+                        <Input id={`endorsement-name-${endorsement.id}`} name="name" defaultValue={endorsement.name} required />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor={`endorsement-role-${endorsement.id}`}>Role</Label>
+                        <Input id={`endorsement-role-${endorsement.id}`} name="role" defaultValue={endorsement.role} required />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor={`endorsement-category-${endorsement.id}`}>Category</Label>
+                        <Input id={`endorsement-category-${endorsement.id}`} name="category" defaultValue={endorsement.category} required />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor={`endorsement-quote-${endorsement.id}`}>Testimonial</Label>
+                        <Textarea id={`endorsement-quote-${endorsement.id}`} name="quote" defaultValue={endorsement.quote} required />
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        <Button type="submit" variant="outline">Edit Endorsement</Button>
+                      </div>
+                    </form>
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      <form action={moveEndorsementAction}>
+                        <input type="hidden" name="id" value={endorsement.id} />
+                        <input type="hidden" name="direction" value="up" />
+                        <Button type="submit" variant="outline" disabled={index === 0}>Move Up</Button>
+                      </form>
+                      <form action={moveEndorsementAction}>
+                        <input type="hidden" name="id" value={endorsement.id} />
+                        <input type="hidden" name="direction" value="down" />
+                        <Button type="submit" variant="outline" disabled={index === endorsements.length - 1}>Move Down</Button>
+                      </form>
+                      <form action={deleteEndorsementAction}>
+                        <input type="hidden" name="id" value={endorsement.id} />
+                        <Button type="submit" variant="outline">Delete Endorsement</Button>
+                      </form>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </AccordionSection>
+
+          <AccordionSection title="Site Settings">
+            <div className="grid gap-4 md:grid-cols-3">
               {settings.map((setting) => (
                 <form key={setting.key} action={saveSettingAction} className="flex flex-col gap-3">
                   <Label htmlFor={setting.key}>{setting.key}</Label>
@@ -168,14 +269,11 @@ export default async function AdminPage({
                   <Button type="submit" variant="outline">Save</Button>
                 </form>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </AccordionSection>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Volunteer Signups</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
+          <AccordionSection title="Volunteer Signups">
+            <div className="grid gap-4 lg:grid-cols-2">
               {volunteers.map((volunteer) => (
                 <div key={volunteer.id} className="rounded-md border p-4 text-sm">
                   <div className="grid gap-3 md:grid-cols-2">
@@ -202,14 +300,11 @@ export default async function AdminPage({
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </AccordionSection>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Contact Submissions</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
+          <AccordionSection title="Contact Submissions">
+            <div className="grid gap-4 lg:grid-cols-2">
               {contacts.map((contact) => (
                 <div key={contact.id} className="rounded-md border p-4 text-sm">
                   <div className="grid gap-3 md:grid-cols-2">
@@ -232,62 +327,8 @@ export default async function AdminPage({
                   </div>
                 </div>
               ))}
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Current Events</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              {events.map((event) => (
-                <div key={event.id} className="rounded-md border p-4">
-                  <form action={saveEventAction} className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-                    <input type="hidden" name="id" value={event.id} />
-                    <div className="flex flex-col gap-2 lg:col-span-2">
-                      <Label htmlFor={`event-title-${event.id}`}>Event Title</Label>
-                      <Input id={`event-title-${event.id}`} name="title" defaultValue={event.title} required />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor={`event-startsAt-${event.id}`}>Date and Time</Label>
-                      <Input id={`event-startsAt-${event.id}`} name="startsAt" type="datetime-local" defaultValue={toDateTimeLocal(event.startsAt)} required />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label htmlFor={`event-location-${event.id}`}>Location</Label>
-                      <Input id={`event-location-${event.id}`} name="location" defaultValue={event.location} required />
-                    </div>
-                    <div className="flex flex-col gap-2 lg:col-span-2">
-                      <Label htmlFor={`event-description-${event.id}`}>Description</Label>
-                      <Textarea id={`event-description-${event.id}`} name="description" defaultValue={event.description} required />
-                    </div>
-                    <label className="flex items-center gap-3 text-sm font-semibold lg:col-span-2">
-                      <input name="isPublished" type="checkbox" defaultChecked={event.isPublished} className="size-4 accent-[#0F2D52]" />
-                      Published
-                    </label>
-                    <div className="flex flex-wrap gap-3 lg:col-span-2">
-                      <Button type="submit" variant="outline">Update Event</Button>
-                    </div>
-                  </form>
-                  <form action={deleteEventAction} className="mt-3">
-                    <input type="hidden" name="id" value={event.id} />
-                    <Button type="submit" variant="outline">Delete Event</Button>
-                  </form>
-                  <p className="mt-3 text-sm text-muted-foreground">{formatDate(event.startsAt)}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Current Endorsements</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {endorsements.map((endorsement) => (
-                <p key={endorsement.id} className="text-sm"><span className="font-semibold">{endorsement.name}</span> {endorsement.category}</p>
-              ))}
-            </CardContent>
-          </Card>
+            </div>
+          </AccordionSection>
         </div>
       </div>
     </Section>

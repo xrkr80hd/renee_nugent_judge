@@ -21,6 +21,18 @@ const contactSchema = z.object({
   message: z.string().min(10)
 });
 
+async function normalizeEventOrder(eventIds: string[]) {
+  await prisma.$transaction(
+    eventIds.map((id, index) => prisma.event.update({ where: { id }, data: { sortOrder: index } }))
+  );
+}
+
+async function normalizeEndorsementOrder(endorsementIds: string[]) {
+  await prisma.$transaction(
+    endorsementIds.map((id, index) => prisma.endorsement.update({ where: { id }, data: { sortOrder: index } }))
+  );
+}
+
 async function requireAdmin() {
   if (!(await isAdminAuthenticated())) {
     redirect("/admin");
@@ -82,13 +94,14 @@ export async function saveEventAction(formData: FormData) {
     startsAt: new Date(String(formData.get("startsAt") ?? "")),
     location: String(formData.get("location") ?? ""),
     description: String(formData.get("description") ?? ""),
-    isPublished: formData.get("isPublished") === "on"
+    isPublished: true
   };
 
   if (id) {
     await prisma.event.update({ where: { id }, data });
   } else {
-    await prisma.event.create({ data });
+    const lastEvent = await prisma.event.findFirst({ orderBy: [{ sortOrder: "desc" }, { startsAt: "asc" }] });
+    await prisma.event.create({ data: { ...data, sortOrder: (lastEvent?.sortOrder ?? -1) + 1 } });
   }
 
   revalidatePath("/events");
@@ -102,7 +115,34 @@ export async function deleteEventAction(formData: FormData) {
 
   if (id) {
     await prisma.event.delete({ where: { id } });
+    const remainingEvents = await prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], select: { id: true } });
+    await normalizeEventOrder(remainingEvents.map((event) => event.id));
   }
+
+  revalidatePath("/events");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function moveEventAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const direction = String(formData.get("direction") ?? "");
+  const events = await prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], select: { id: true } });
+  const currentIndex = events.findIndex((event) => event.id === id);
+
+  if (currentIndex === -1) {
+    redirect("/admin");
+  }
+
+  const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+  if (targetIndex < 0 || targetIndex >= events.length) {
+    redirect("/admin");
+  }
+
+  const reordered = [...events];
+  [reordered[currentIndex], reordered[targetIndex]] = [reordered[targetIndex], reordered[currentIndex]];
+  await normalizeEventOrder(reordered.map((event) => event.id));
 
   revalidatePath("/events");
   revalidatePath("/admin");
@@ -117,14 +157,55 @@ export async function saveEndorsementAction(formData: FormData) {
     role: String(formData.get("role") ?? ""),
     quote: String(formData.get("quote") ?? ""),
     category: String(formData.get("category") ?? "Community Supporter"),
-    isPublished: formData.get("isPublished") === "on"
+    isPublished: true
   };
 
   if (id) {
     await prisma.endorsement.update({ where: { id }, data });
   } else {
-    await prisma.endorsement.create({ data });
+    const lastEndorsement = await prisma.endorsement.findFirst({ orderBy: [{ sortOrder: "desc" }, { createdAt: "desc" }] });
+    await prisma.endorsement.create({ data: { ...data, sortOrder: (lastEndorsement?.sortOrder ?? -1) + 1 } });
   }
+
+  revalidatePath("/endorsements");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function deleteEndorsementAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+
+  if (id) {
+    await prisma.endorsement.delete({ where: { id } });
+    const remainingEndorsements = await prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], select: { id: true } });
+    await normalizeEndorsementOrder(remainingEndorsements.map((endorsement) => endorsement.id));
+  }
+
+  revalidatePath("/endorsements");
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function moveEndorsementAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const direction = String(formData.get("direction") ?? "");
+  const endorsements = await prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], select: { id: true } });
+  const currentIndex = endorsements.findIndex((endorsement) => endorsement.id === id);
+
+  if (currentIndex === -1) {
+    redirect("/admin");
+  }
+
+  const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+  if (targetIndex < 0 || targetIndex >= endorsements.length) {
+    redirect("/admin");
+  }
+
+  const reordered = [...endorsements];
+  [reordered[currentIndex], reordered[targetIndex]] = [reordered[targetIndex], reordered[currentIndex]];
+  await normalizeEndorsementOrder(reordered.map((endorsement) => endorsement.id));
 
   revalidatePath("/endorsements");
   revalidatePath("/admin");

@@ -27,6 +27,7 @@ alter table public."ContactSubmission" enable row level security;
 
 create table if not exists public."Event" (
   id text primary key,
+  "sortOrder" integer not null default 0,
   title text not null,
   "startsAt" timestamptz not null,
   location text not null,
@@ -36,12 +37,15 @@ create table if not exists public."Event" (
   "updatedAt" timestamptz not null default now()
 );
 
+alter table public."Event" add column if not exists "sortOrder" integer not null default 0;
 create index if not exists "Event_startsAt_idx" on public."Event" ("startsAt" asc);
 create index if not exists "Event_isPublished_idx" on public."Event" ("isPublished");
+create index if not exists "Event_sortOrder_idx" on public."Event" ("sortOrder");
 alter table public."Event" enable row level security;
 
 create table if not exists public."Endorsement" (
   id text primary key,
+  "sortOrder" integer not null default 0,
   name text not null,
   role text not null,
   quote text not null,
@@ -51,8 +55,10 @@ create table if not exists public."Endorsement" (
   "updatedAt" timestamptz not null default now()
 );
 
+alter table public."Endorsement" add column if not exists "sortOrder" integer not null default 0;
 create index if not exists "Endorsement_category_idx" on public."Endorsement" (category);
 create index if not exists "Endorsement_isPublished_idx" on public."Endorsement" ("isPublished");
+create index if not exists "Endorsement_sortOrder_idx" on public."Endorsement" ("sortOrder");
 alter table public."Endorsement" enable row level security;
 
 create table if not exists public."NewsPost" (
