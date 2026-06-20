@@ -11,8 +11,8 @@ export const campaign = {
   seoDescription:
     "Renee Dugas Nugent is a candidate for District Judge for the Thirty-Fifth Judicial District Court serving Grant Parish, Louisiana.",
   contact: {
-    email: "info@reneedugasnugent.com",
-    phone: "(000) 000-0000",
+    email: "reneefor35jdc@gmail.com",
+    phone: "3186131601",
     facebook: "#",
     instagram: "#"
   },

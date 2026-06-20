@@ -20,6 +20,15 @@ export function Footer() {
             <li><Link href="/judicial-philosophy">Judicial Philosophy</Link></li>
             <li><Link href="/events">Events</Link></li>
           </ul>
+          <h2 className="mb-3 mt-6 font-serif text-xl font-semibold">Campaign Contact</h2>
+          <ul className="flex flex-col gap-2 text-sm text-primary-foreground/80">
+            <li>
+              <a href={`tel:${campaign.contact.phone}`}>{campaign.contact.phone}</a>
+            </li>
+            <li>
+              <a href={`mailto:${campaign.contact.email}`}>{campaign.contact.email}</a>
+            </li>
+          </ul>
         </div>
         <div>
           <h2 className="mb-3 font-serif text-xl font-semibold">Take Action</h2>
