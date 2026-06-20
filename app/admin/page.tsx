@@ -8,6 +8,7 @@ import { deleteEndorsementAction, deleteEventAction, loginAction, logoutAction, 
 import { isAdminAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 
 function toDateTimeLocal(value: Date) {
   return value.toISOString().slice(0, 16);
@@ -23,9 +24,10 @@ function AccordionSection({
   children
 }: Readonly<{ title: string; defaultOpen?: boolean; children: React.ReactNode }>) {
   return (
-    <details className="rounded-md border bg-white" open={defaultOpen}>
-      <summary className="cursor-pointer list-none px-6 py-4 font-serif text-xl font-semibold">
-        {title}
+    <details className="rounded-md border bg-white [&[open]_.accordion-chevron]:rotate-180" open={defaultOpen}>
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 font-serif text-xl font-semibold">
+        <span>{title}</span>
+        <ChevronDown className="accordion-chevron size-6 shrink-0 text-[#0F2D52] transition-transform duration-200" aria-hidden="true" />
       </summary>
       <div className="border-t px-6 py-6">{children}</div>
     </details>
@@ -135,13 +137,13 @@ export default async function AdminPage({
                 <CardTitle>Add Event</CardTitle>
               </CardHeader>
               <CardContent>
-              <form action={saveEventAction} className="flex flex-col gap-4">
-                <Input name="title" placeholder="Event title" required />
-                <Input name="startsAt" type="datetime-local" required />
-                <Input name="location" placeholder="Location" required />
-                <Textarea name="description" placeholder="Description" required />
-                <Button type="submit">Save Event</Button>
-              </form>
+                <form action={saveEventAction} className="flex flex-col gap-4">
+                  <Input name="title" placeholder="Event title" required />
+                  <Input name="startsAt" type="datetime-local" required />
+                  <Input name="location" placeholder="Location" required />
+                  <Textarea name="description" placeholder="Description" required />
+                  <Button type="submit">Save Event</Button>
+                </form>
               </CardContent>
             </Card>
 
@@ -200,13 +202,13 @@ export default async function AdminPage({
                 <CardTitle>Add Endorsement</CardTitle>
               </CardHeader>
               <CardContent>
-              <form action={saveEndorsementAction} className="flex flex-col gap-4">
-                <Input name="name" placeholder="Name" required />
-                <Input name="role" placeholder="Role or organization" required />
-                <Input name="category" placeholder="Category" defaultValue="Community Supporter" />
-                <Textarea name="quote" placeholder="Testimonial" required />
-                <Button type="submit">Save Endorsement</Button>
-              </form>
+                <form action={saveEndorsementAction} className="flex flex-col gap-4">
+                  <Input name="name" placeholder="Name" required />
+                  <Input name="role" placeholder="Role or organization" required />
+                  <Input name="category" placeholder="Category" defaultValue="Community Supporter" />
+                  <Textarea name="quote" placeholder="Testimonial" required />
+                  <Button type="submit">Save Endorsement</Button>
+                </form>
               </CardContent>
             </Card>
 
