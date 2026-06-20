@@ -15,6 +15,8 @@ model Volunteer {
   phone     String?
   city      String?
   interests String
+  contacted Boolean  @default(false)
+  confirmed Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([createdAt(sort: Desc)])

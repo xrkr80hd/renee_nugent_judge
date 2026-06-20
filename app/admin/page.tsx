@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { deleteEndorsementAction, deleteEventAction, loginAction, logoutAction, moveEndorsementAction, moveEventAction, saveEndorsementAction, saveEventAction, saveSettingAction } from "@/lib/actions";
+import { deleteEndorsementAction, deleteEventAction, loginAction, logoutAction, moveEndorsementAction, moveEventAction, saveEndorsementAction, saveEventAction, saveSettingAction, updateVolunteerStatusAction } from "@/lib/actions";
 import { isAdminAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
@@ -300,6 +300,21 @@ export default async function AdminPage({
                     <p className="font-semibold text-muted-foreground">Volunteer For</p>
                     <p>{volunteer.interests}</p>
                   </div>
+                  <form action={updateVolunteerStatusAction} className="mt-4 rounded-md border bg-muted/30 p-3">
+                    <input type="hidden" name="id" value={volunteer.id} />
+                    <p className="mb-2 font-semibold text-muted-foreground">Volunteer Status</p>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <label className="inline-flex items-center gap-2">
+                        <input name="contacted" type="checkbox" defaultChecked={volunteer.contacted} className="size-4 accent-[#0F2D52]" />
+                        Contacted
+                      </label>
+                      <label className="inline-flex items-center gap-2">
+                        <input name="confirmed" type="checkbox" defaultChecked={volunteer.confirmed} className="size-4 accent-[#0F2D52]" />
+                        Confirmed
+                      </label>
+                      <Button type="submit" variant="outline">Save Status</Button>
+                    </div>
+                  </form>
                 </div>
               ))}
             </div>

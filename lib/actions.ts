@@ -74,6 +74,29 @@ export async function volunteerAction(formData: FormData) {
   redirect("/volunteer?success=1");
 }
 
+export async function updateVolunteerStatusAction(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const contacted = formData.get("contacted") === "on";
+  const confirmed = formData.get("confirmed") === "on";
+
+  if (!id) {
+    redirect("/admin");
+  }
+
+  // Confirmed volunteers are always treated as contacted.
+  await prisma.volunteer.update({
+    where: { id },
+    data: {
+      contacted: contacted || confirmed,
+      confirmed
+    }
+  });
+
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
 export async function contactAction(formData: FormData) {
   const parsed = contactSchema.parse({
     name: formData.get("name"),

@@ -5,8 +5,13 @@ create table if not exists public."Volunteer" (
   phone text,
   city text,
   interests text not null,
+  contacted boolean not null default false,
+  confirmed boolean not null default false,
   "createdAt" timestamptz not null default now()
 );
+
+alter table public."Volunteer" add column if not exists contacted boolean not null default false;
+alter table public."Volunteer" add column if not exists confirmed boolean not null default false;
 
 create index if not exists "Volunteer_createdAt_idx" on public."Volunteer" ("createdAt" desc);
 create index if not exists "Volunteer_email_idx" on public."Volunteer" (email);
