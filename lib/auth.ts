@@ -56,3 +56,12 @@ export function validAdminPassword(password: string) {
     return false;
   }
 }
+
+export function validAdminUsername(username: string) {
+  const configured = process.env.ADMIN_USERNAME ?? "change-this-username";
+  try {
+    return timingSafeEqual(Buffer.from(username), Buffer.from(configured));
+  } catch {
+    return false;
+  }
+}

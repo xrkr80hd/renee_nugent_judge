@@ -29,8 +29,12 @@ export default async function AdminPage({
               {params.error ? <p className="mb-4 text-sm font-semibold text-red-700">Invalid password.</p> : null}
               <form action={loginAction} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
+                  <Label htmlFor="username">Admin Username</Label>
+                  <Input id="username" name="username" type="text" autoComplete="username" required />
+                </div>
+                <div className="flex flex-col gap-2">
                   <Label htmlFor="password">Admin Password</Label>
-                  <Input id="password" name="password" type="password" required />
+                  <Input id="password" name="password" type="password" autoComplete="current-password" required />
                 </div>
                 <Button type="submit">Sign In</Button>
               </form>

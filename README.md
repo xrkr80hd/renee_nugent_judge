@@ -14,7 +14,7 @@ Production-ready campaign website for Renee Dugas Nugent, candidate for District
 ## Local Setup
 
 1. Copy `.env.example` to `.env`.
-2. Set `ADMIN_PASSWORD` and `SESSION_SECRET`.
+2. Set `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `SESSION_SECRET`.
 3. Install dependencies:
 
 ```bash
@@ -40,7 +40,7 @@ Open `http://localhost:3000`.
 
 ## Admin
 
-Open `http://localhost:3000/admin` and sign in with `ADMIN_PASSWORD`.
+Open `http://localhost:3000/admin` and sign in with `ADMIN_USERNAME` and `ADMIN_PASSWORD`.
 
 The backend supports:
 
