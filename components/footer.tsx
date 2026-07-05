@@ -42,6 +42,9 @@ export function Footer() {
           <p className="mt-2 text-sm text-primary-foreground/80">{campaign.court}</p>
         </div>
       </div>
+      <div className="container pb-6 text-left text-xs text-primary-foreground/70">
+        Made with love by <a href="http://xrkr80hd.studio" target="_blank" rel="noreferrer noopener" className="underline underline-offset-4 hover:text-primary-foreground">xrkr80hd designs</a>
+      </div>
     </footer>
   );
 }

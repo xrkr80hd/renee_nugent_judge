@@ -9,6 +9,7 @@ import { isAdminAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
+import { PasswordField } from "./password-field";
 
 function toDateTimeLocal(value: Date) {
   return value.toISOString().slice(0, 16);
@@ -55,10 +56,7 @@ export default async function AdminPage({
                   <Label htmlFor="username">Admin Username</Label>
                   <Input id="username" name="username" type="text" autoComplete="username" required />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label htmlFor="password">Admin Password</Label>
-                  <Input id="password" name="password" type="password" autoComplete="current-password" required />
-                </div>
+                <PasswordField />
                 <Button type="submit">Sign In</Button>
               </form>
             </CardContent>
@@ -90,6 +88,27 @@ export default async function AdminPage({
         </div>
 
         <div className="grid gap-6">
+          <AccordionSection title="Admin Tutorial" defaultOpen>
+            <div className="grid gap-4 rounded-md border bg-muted/20 p-4 text-sm leading-7">
+              <p className="font-semibold text-foreground">How this website works (quick guide)</p>
+              <p>
+                This website has public pages on the front side (what voters see) and this admin dashboard on the back side
+                (what your campaign team manages).
+              </p>
+              <ol className="list-decimal space-y-2 pl-5">
+                <li>Open each accordion section by tapping the blue arrow on the right.</li>
+                <li>Use <span className="font-semibold">Event Management</span> to add, edit, reorder, or delete events.</li>
+                <li>Use <span className="font-semibold">Endorsement Management</span> to add, edit, reorder, or delete endorsements.</li>
+                <li>Use <span className="font-semibold">Published on Site</span> to confirm what is currently visible on the public pages.</li>
+                <li>Use <span className="font-semibold">Volunteer Signups</span> to review entries and track status with Contacted/Confirmed.</li>
+                <li>Use <span className="font-semibold">Site Settings</span> to update key homepage text instantly.</li>
+              </ol>
+              <p className="text-muted-foreground">
+                Tip: after saving changes, refresh the public page in another tab to verify exactly how voters see it.
+              </p>
+            </div>
+          </AccordionSection>
+
           <AccordionSection title="Published on Site" defaultOpen>
             <div className="grid gap-6 md:grid-cols-3">
               <div className="rounded-md border p-4 text-sm">
@@ -147,52 +166,67 @@ export default async function AdminPage({
               </CardContent>
             </Card>
 
-            <div className="mt-6 rounded-md border p-4">
-              <h3 className="font-serif text-xl font-semibold">Posted Events</h3>
-              <div className="mt-4 grid gap-4">
-                {events.map((event, index) => (
-                  <div key={event.id} className="rounded-md border p-4">
-                    <form action={saveEventAction} className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-                      <input type="hidden" name="id" value={event.id} />
-                      <div className="flex flex-col gap-2 lg:col-span-2">
-                        <Label htmlFor={`event-title-${event.id}`}>Event Title</Label>
-                        <Input id={`event-title-${event.id}`} name="title" defaultValue={event.title} required />
+            <div className="mt-6">
+              <AccordionSection title="Published Events" defaultOpen>
+                <div className="grid gap-4">
+                  {publishedEvents.length ? (
+                    publishedEvents.map((event, index) => (
+                      <div key={event.id} className="rounded-md border p-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0">
+                            <p className="truncate font-semibold">{event.title}</p>
+                            <p className="text-sm text-muted-foreground">{formatDate(event.startsAt)}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-2 sm:justify-end">
+                            <form action={moveEventAction}>
+                              <input type="hidden" name="id" value={event.id} />
+                              <input type="hidden" name="direction" value="up" />
+                              <Button type="submit" variant="outline" disabled={index === 0}>Drag Up</Button>
+                            </form>
+                            <form action={moveEventAction}>
+                              <input type="hidden" name="id" value={event.id} />
+                              <input type="hidden" name="direction" value="down" />
+                              <Button type="submit" variant="outline" disabled={index === publishedEvents.length - 1}>Drag Down</Button>
+                            </form>
+                            <form action={deleteEventAction}>
+                              <input type="hidden" name="id" value={event.id} />
+                              <Button type="submit" variant="outline">Delete</Button>
+                            </form>
+                          </div>
+                        </div>
+
+                        <details className="mt-3 rounded-md border bg-muted/20 p-3">
+                          <summary className="cursor-pointer list-none font-semibold text-primary">Edit</summary>
+                          <form action={saveEventAction} className="mt-3 grid gap-4 lg:grid-cols-[1fr_1fr]">
+                            <input type="hidden" name="id" value={event.id} />
+                            <div className="flex flex-col gap-2 lg:col-span-2">
+                              <Label htmlFor={`event-title-${event.id}`}>Event Title</Label>
+                              <Input id={`event-title-${event.id}`} name="title" defaultValue={event.title} required />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <Label htmlFor={`event-startsAt-${event.id}`}>Date and Time</Label>
+                              <Input id={`event-startsAt-${event.id}`} name="startsAt" type="datetime-local" defaultValue={toDateTimeLocal(event.startsAt)} required />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <Label htmlFor={`event-location-${event.id}`}>Location</Label>
+                              <Input id={`event-location-${event.id}`} name="location" defaultValue={event.location} required />
+                            </div>
+                            <div className="flex flex-col gap-2 lg:col-span-2">
+                              <Label htmlFor={`event-description-${event.id}`}>Description</Label>
+                              <Textarea id={`event-description-${event.id}`} name="description" defaultValue={event.description} required />
+                            </div>
+                            <div className="lg:col-span-2">
+                              <Button type="submit" variant="outline">Save Edit</Button>
+                            </div>
+                          </form>
+                        </details>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor={`event-startsAt-${event.id}`}>Date and Time</Label>
-                        <Input id={`event-startsAt-${event.id}`} name="startsAt" type="datetime-local" defaultValue={toDateTimeLocal(event.startsAt)} required />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label htmlFor={`event-location-${event.id}`}>Location</Label>
-                        <Input id={`event-location-${event.id}`} name="location" defaultValue={event.location} required />
-                      </div>
-                      <div className="flex flex-col gap-2 lg:col-span-2">
-                        <Label htmlFor={`event-description-${event.id}`}>Description</Label>
-                        <Textarea id={`event-description-${event.id}`} name="description" defaultValue={event.description} required />
-                      </div>
-                      <div className="flex flex-wrap gap-3 lg:col-span-2">
-                        <Button type="submit" variant="outline">Edit Event</Button>
-                      </div>
-                    </form>
-                    <div className="mt-3 flex flex-wrap gap-3">
-                      <form action={moveEventAction}>
-                        <input type="hidden" name="id" value={event.id} />
-                        <input type="hidden" name="direction" value="up" />
-                        <Button type="submit" variant="outline" disabled={index === 0}>Move Up</Button>
-                      </form>
-                      <form action={moveEventAction}>
-                        <input type="hidden" name="id" value={event.id} />
-                        <input type="hidden" name="direction" value="down" />
-                        <Button type="submit" variant="outline" disabled={index === events.length - 1}>Move Down</Button>
-                      </form>
-                      <form action={deleteEventAction}>
-                        <input type="hidden" name="id" value={event.id} />
-                        <Button type="submit" variant="outline">Delete Event</Button>
-                      </form>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No published events available yet.</p>
+                  )}
+                </div>
+              </AccordionSection>
             </div>
           </AccordionSection>
 

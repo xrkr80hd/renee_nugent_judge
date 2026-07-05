@@ -27,6 +27,9 @@
 
 html {
   scroll-behavior: smooth;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -37,6 +40,24 @@ body {
   color: hsl(var(--foreground));
   font-family: var(--font-sans), Arial, sans-serif;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+img,
+svg,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+input,
+textarea,
+select,
+button {
+  max-width: 100%;
 }
 
 ::selection {
@@ -63,4 +84,37 @@ body {
     linear-gradient(225deg, rgba(15, 45, 82, 0.035) 25%, transparent 25%);
   background-position: 0 0, 12px 12px;
   background-size: 24px 24px;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.loading-aura {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(200, 164, 90, 0.2), transparent 35%),
+    radial-gradient(circle at 80% 14%, rgba(15, 45, 82, 0.12), transparent 34%),
+    radial-gradient(circle at 50% 100%, rgba(112, 154, 164, 0.2), transparent 38%);
+}
+
+.loading-spinner {
+  animation: loader-spin 0.9s linear infinite;
+}
+
+.loading-bar {
+  background: linear-gradient(90deg, rgba(15, 45, 82, 0.12), rgba(200, 164, 90, 0.38), rgba(15, 45, 82, 0.12));
+  background-size: 200% 100%;
+  animation: shimmer 1.8s linear infinite;
 }

@@ -16,7 +16,7 @@ export default async function EndorsementsPage() {
     <>
       <PageHero
         title="Endorsements"
-        intro="Public support will appear here once the campaign is ready to publish names, roles, and testimonials."
+        intro="Support for Renee's campaign will be shared here as community leaders, neighbors, and advocates add their voices."
         compact
       />
       <Section className="bg-white">
@@ -29,7 +29,7 @@ export default async function EndorsementsPage() {
               </CardHeader>
               <CardContent>
                 <p className="leading-7 text-muted-foreground">
-                  This page is ready for verified endorsements once they are approved for publication.
+                  Renee is continuing to earn support across Grant Parish. Check back here for published endorsements from community members and supporters.
                 </p>
               </CardContent>
             </Card>
