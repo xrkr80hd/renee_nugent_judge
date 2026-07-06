@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const storyMarkers = [
     ["Home", campaign.residence, MapPin],
-    ["Faith", "Five-year member of HIS Church in Pineville", Church],
+    ["Faith", "Over 25 years at Crossroads Ministry Centre and active membership at HIS Church in Pineville", Church],
     ["Education", "Psychology, law, and social work training through Louisiana schools.", GraduationCap],
     ["Perspective", "A first-generation law school path shaped by work, family, and service.", HeartHandshake]
   ] as const;

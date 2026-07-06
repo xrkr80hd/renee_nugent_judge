@@ -29,8 +29,8 @@ export const campaign = {
   ],
   biography: [
     "Renee Dugas Nugent is a lifelong Central Louisiana resident with deep roots in Grant Parish and the surrounding community. She was born at Charity Hospital in Pineville, Louisiana, and grew up in Tioga. Although her family did not have many material luxuries, Renee remembers having a good life, grounded in faith, family, hard work, and community.",
-    "Renee was raised in church, believing in and following Jesus. She is a five-year member of HIS Church in Pineville.",
-    "Renee is divorced and is the mother of Joseph \"Joey\" Dugas and Jaidyn B. Dugas. She is also the proud grandmother of Beaux Monroe Dugas and has three bonus grandchildren: Paisley Nugent, Everly Nugent, and Salem Nugent.",
+    "Renee was raised in church, believing in and following Jesus. She was a member of Crossroads Ministry Centre for over 25 years and was very active in youth, missions, and childcare ministries, in addition to her membership at HIS Church in Pineville.",
+    "Renee is divorced and is the mother of Joseph \"Joey\" Dugas and Jaidyn B. Dugas. She is also the proud grandmother of Beaux Monroe Dugas and has five bonus grandchildren: Paisley Nugent, Everly Nugent, Salem Nugent, Hazel Nugent, and Alex Nugent.",
     "Outside of her professional life, Renee enjoys traveling and the experiences gained through cultural exploration. She enjoys trying foods from different cultures, spending time with family and friends, attending community events, and enjoying Louisiana festivals."
   ],
   earlyLife: [

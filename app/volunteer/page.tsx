@@ -63,9 +63,25 @@ export default async function VolunteerPage({
                     <Label htmlFor="phone">Phone</Label>
                     <Input id="phone" name="phone" />
                   </div>
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <Label htmlFor="address1">Street Address</Label>
+                    <Input id="address1" name="address1" placeholder="123 Main St" required />
+                  </div>
+                  <div className="flex flex-col gap-2 md:col-span-2">
+                    <Label htmlFor="address2">Apt / Suite (Optional)</Label>
+                    <Input id="address2" name="address2" placeholder="Apt 4B" />
+                  </div>
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="city">City</Label>
-                    <Input id="city" name="city" />
+                    <Input id="city" name="city" required />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="state">State</Label>
+                    <Input id="state" name="state" placeholder="LA" required />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="zip">ZIP Code</Label>
+                    <Input id="zip" name="zip" required />
                   </div>
                 </div>
                 <fieldset className="flex flex-col gap-3">

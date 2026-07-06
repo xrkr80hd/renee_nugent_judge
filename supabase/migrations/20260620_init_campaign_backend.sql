@@ -3,7 +3,11 @@ create table if not exists public."Volunteer" (
   name text not null,
   email text not null,
   phone text,
+  address1 text,
+  address2 text,
   city text,
+  state text,
+  zip text,
   interests text not null,
   contacted boolean not null default false,
   confirmed boolean not null default false,
@@ -12,6 +16,10 @@ create table if not exists public."Volunteer" (
 
 alter table public."Volunteer" add column if not exists contacted boolean not null default false;
 alter table public."Volunteer" add column if not exists confirmed boolean not null default false;
+alter table public."Volunteer" add column if not exists address1 text;
+alter table public."Volunteer" add column if not exists address2 text;
+alter table public."Volunteer" add column if not exists state text;
+alter table public."Volunteer" add column if not exists zip text;
 
 create index if not exists "Volunteer_createdAt_idx" on public."Volunteer" ("createdAt" desc);
 create index if not exists "Volunteer_email_idx" on public."Volunteer" (email);
@@ -29,6 +37,25 @@ create table if not exists public."ContactSubmission" (
 create index if not exists "ContactSubmission_createdAt_idx" on public."ContactSubmission" ("createdAt" desc);
 create index if not exists "ContactSubmission_email_idx" on public."ContactSubmission" (email);
 alter table public."ContactSubmission" enable row level security;
+
+create table if not exists public."DonationSubmission" (
+  id text primary key,
+  name text not null,
+  email text not null,
+  phone text,
+  address1 text not null,
+  address2 text,
+  city text not null,
+  state text not null,
+  zip text not null,
+  amount text,
+  notes text,
+  "createdAt" timestamptz not null default now()
+);
+
+create index if not exists "DonationSubmission_createdAt_idx" on public."DonationSubmission" ("createdAt" desc);
+create index if not exists "DonationSubmission_email_idx" on public."DonationSubmission" (email);
+alter table public."DonationSubmission" enable row level security;
 
 create table if not exists public."Event" (
   id text primary key,

@@ -66,9 +66,10 @@ export default async function AdminPage({
     );
   }
 
-  const [volunteers, contacts, events, endorsements, settings] = await Promise.all([
+  const [volunteers, contacts, donations, events, endorsements, settings] = await Promise.all([
     prisma.volunteer.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
     prisma.contactSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
+    prisma.donationSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
     prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], take: 20 }),
     prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], take: 20 }),
     prisma.siteSetting.findMany({ orderBy: { key: "asc" } })
@@ -101,6 +102,7 @@ export default async function AdminPage({
                 <li>Use <span className="font-semibold">Endorsement Management</span> to add, edit, reorder, or delete endorsements.</li>
                 <li>Use <span className="font-semibold">Published on Site</span> to confirm what is currently visible on the public pages.</li>
                 <li>Use <span className="font-semibold">Volunteer Signups</span> to review entries and track status with Contacted/Confirmed.</li>
+                <li>Use <span className="font-semibold">Donor Reporting</span> to collect contributor address details for reporting.</li>
                 <li>Use <span className="font-semibold">Site Settings</span> to update key homepage text instantly.</li>
               </ol>
               <p className="text-muted-foreground">
@@ -326,8 +328,21 @@ export default async function AdminPage({
                       <p>{volunteer.phone || "Not provided"}</p>
                     </div>
                     <div>
+                      <p className="font-semibold text-muted-foreground">Street Address</p>
+                      <p>{volunteer.address1 || "Not provided"}</p>
+                      <p className="text-muted-foreground">{volunteer.address2 || ""}</p>
+                    </div>
+                    <div>
                       <p className="font-semibold text-muted-foreground">City</p>
                       <p>{volunteer.city || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">State</p>
+                      <p>{volunteer.state || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">ZIP</p>
+                      <p>{volunteer.zip || "Not provided"}</p>
                     </div>
                   </div>
                   <div className="mt-3">
@@ -349,6 +364,45 @@ export default async function AdminPage({
                       <Button type="submit" variant="outline">Save Status</Button>
                     </div>
                   </form>
+                </div>
+              ))}
+            </div>
+          </AccordionSection>
+
+          <AccordionSection title="Donor Reporting Submissions">
+            <div className="grid gap-4 lg:grid-cols-2">
+              {donations.map((donation) => (
+                <div key={donation.id} className="rounded-md border p-4 text-sm">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Name</p>
+                      <p>{donation.name}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Email</p>
+                      <p>{donation.email}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Phone</p>
+                      <p>{donation.phone || "Not provided"}</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-muted-foreground">Amount</p>
+                      <p>{donation.amount || "Not provided"}</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <p className="font-semibold text-muted-foreground">Address</p>
+                      <p>{donation.address1}</p>
+                      {donation.address2 ? <p>{donation.address2}</p> : null}
+                      <p>{donation.city}, {donation.state} {donation.zip}</p>
+                    </div>
+                    {donation.notes ? (
+                      <div className="md:col-span-2">
+                        <p className="font-semibold text-muted-foreground">Notes</p>
+                        <p>{donation.notes}</p>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </div>

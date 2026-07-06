@@ -110,6 +110,38 @@ export default async function HomePage() {
         </div>
       </Section>
 
+      <Section className="bg-white">
+        <div className="container grid items-start gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10">
+          <div className="border-l-4 border-secondary bg-background p-5 shadow-sm md:p-7">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">Court Priorities</p>
+            <h2 className="mt-3 font-serif text-3xl font-semibold leading-tight md:text-5xl">
+              Renee's Priorities for the 35th Judicial District Court
+            </h2>
+          </div>
+          <div className="grid gap-4">
+            {[
+              [
+                "Support Responsible Term Limits",
+                "Renee believes term limits promote accountability, encourage fresh perspectives, and help ensure public service remains focused on the people, not personal power."
+              ],
+              [
+                "Work Toward Establishing a Drug Court",
+                "Renee wants to explore implementing a Drug Court program that holds offenders accountable while providing a structured path toward treatment, recovery, and reduced repeat offenses."
+              ],
+              [
+                "Improve Courtroom Efficiency",
+                "Renee is committed to keeping cases moving efficiently through the court system. Delays affect families, victims, law enforcement, attorneys, and defendants alike. Justice delayed is justice denied."
+              ]
+            ].map(([title, body]) => (
+              <div key={title} className="border-l-4 border-secondary bg-white p-5 shadow-sm">
+                <h3 className="font-serif text-2xl font-semibold">{title}</h3>
+                <p className="mt-2 text-sm leading-7 text-muted-foreground md:text-base">{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Section>
+
       <Section className="bg-primary text-primary-foreground">
         <div className="container grid gap-12 lg:grid-cols-[0.88fr_1.12fr]">
           <div>

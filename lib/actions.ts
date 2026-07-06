@@ -10,8 +10,25 @@ const volunteerSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
   phone: z.string().optional(),
+  address1: z.string().optional(),
+  address2: z.string().optional(),
   city: z.string().optional(),
+  state: z.string().optional(),
+  zip: z.string().optional(),
   interests: z.array(z.string()).default([])
+});
+
+const donationSubmissionSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+  phone: z.string().optional(),
+  address1: z.string().min(3),
+  address2: z.string().optional(),
+  city: z.string().min(2),
+  state: z.string().min(2),
+  zip: z.string().min(5),
+  amount: z.string().optional(),
+  notes: z.string().optional()
 });
 
 const contactSchema = z.object({
@@ -60,7 +77,11 @@ export async function volunteerAction(formData: FormData) {
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone"),
+    address1: formData.get("address1"),
+    address2: formData.get("address2"),
     city: formData.get("city"),
+    state: formData.get("state"),
+    zip: formData.get("zip"),
     interests: formData.getAll("interests")
   });
 
@@ -72,6 +93,24 @@ export async function volunteerAction(formData: FormData) {
   });
 
   redirect("/volunteer?success=1");
+}
+
+export async function donationSubmissionAction(formData: FormData) {
+  const parsed = donationSubmissionSchema.parse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    phone: formData.get("phone"),
+    address1: formData.get("address1"),
+    address2: formData.get("address2"),
+    city: formData.get("city"),
+    state: formData.get("state"),
+    zip: formData.get("zip"),
+    amount: formData.get("amount"),
+    notes: formData.get("notes")
+  });
+
+  await prisma.donationSubmission.create({ data: parsed });
+  redirect("/donate?success=1");
 }
 
 export async function updateVolunteerStatusAction(formData: FormData) {

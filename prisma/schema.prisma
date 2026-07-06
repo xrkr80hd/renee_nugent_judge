@@ -13,10 +13,32 @@ model Volunteer {
   name      String
   email     String
   phone     String?
+  address1  String?
+  address2  String?
   city      String?
+  state     String?
+  zip       String?
   interests String
   contacted Boolean  @default(false)
   confirmed Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt(sort: Desc)])
+  @@index([email])
+}
+
+model DonationSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  address1  String
+  address2  String?
+  city      String
+  state     String
+  zip       String
+  amount    String?
+  notes     String?
   createdAt DateTime @default(now())
 
   @@index([createdAt(sort: Desc)])
