@@ -71,14 +71,38 @@ export default async function AdminPage({
     );
   }
 
-  const [volunteers, contacts, donations, events, endorsements, settings] = await Promise.all([
-    prisma.volunteer.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
-    prisma.contactSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
-    prisma.donationSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
-    prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], take: 20 }),
-    prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], take: 20 }),
-    prisma.siteSetting.findMany({ orderBy: { key: "asc" } })
-  ]);
+  const {
+    volunteers,
+    contacts,
+    donations,
+    events,
+    endorsements,
+    settings,
+    loadError
+  } = await (async () => {
+    try {
+      const [volunteers, contacts, donations, events, endorsements, settings] = await Promise.all([
+        prisma.volunteer.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
+        prisma.contactSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
+        prisma.donationSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
+        prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], take: 20 }),
+        prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], take: 20 }),
+        prisma.siteSetting.findMany({ orderBy: { key: "asc" } })
+      ]);
+
+      return { volunteers, contacts, donations, events, endorsements, settings, loadError: false };
+    } catch {
+      return {
+        volunteers: [],
+        contacts: [],
+        donations: [],
+        events: [],
+        endorsements: [],
+        settings: [],
+        loadError: true
+      };
+    }
+  })();
 
   const publishedEvents = events.filter((event) => event.isPublished);
   const publishedEndorsements = endorsements.filter((endorsement) => endorsement.isPublished);
@@ -97,6 +121,12 @@ export default async function AdminPage({
             </form>
           </div>
         </div>
+
+        {loadError ? (
+          <div className="mb-6 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Some admin data could not be loaded right now. Try refreshing in a moment.
+          </div>
+        ) : null}
 
         <div className="grid gap-6">
           <AccordionSection title="Admin Tutorial" defaultOpen>
