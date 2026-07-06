@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { donationSubmissionAction } from "@/lib/actions";
 import { getDonationDisclaimer } from "@/lib/public-data";
-import { QrCode } from "lucide-react";
+import { ChevronDown, QrCode } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 
@@ -65,11 +65,15 @@ export default async function DonatePage({
         </div>
 
         <div className="container mt-8">
-          <Card className="border-primary/12 shadow-sm">
-            <CardHeader>
-              <CardTitle>Donor Reporting Form</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <details className="rounded-md border border-primary/12 bg-white shadow-sm [&[open]_.accordion-chevron]:rotate-180" open>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-t-md bg-primary px-6 py-4 text-primary-foreground">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">Secure Form</p>
+                <h3 className="font-serif text-2xl font-semibold">Donor Reporting Form</h3>
+              </div>
+              <ChevronDown className="accordion-chevron size-6 shrink-0 text-secondary transition-transform duration-200" aria-hidden="true" />
+            </summary>
+            <div className="p-6">
               {params.success ? (
                 <p className="mb-4 rounded-md border border-secondary bg-secondary/10 p-3 text-sm font-semibold text-primary">
                   Thank you. Your donor reporting details were submitted successfully.
@@ -120,8 +124,8 @@ export default async function DonatePage({
                   <Button type="submit">Submit Donor Details</Button>
                 </div>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </details>
         </div>
       </Section>
     </>

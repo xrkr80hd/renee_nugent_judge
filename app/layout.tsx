@@ -1,10 +1,11 @@
+import { StructuredData } from "@/app/structured-data";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { VisitAlertPing } from "@/components/visit-alert-ping";
+import { campaign } from "@/content/campaign";
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
-import { StructuredData } from "@/app/structured-data";
-import { campaign } from "@/content/campaign";
 
 const serif = Cormorant_Garamond({
   subsets: ["latin"],
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={`${serif.variable} ${sans.variable}`}>
       <body>
         <StructuredData />
+        <VisitAlertPing />
         <Header />
         <main>{children}</main>
         <Footer />

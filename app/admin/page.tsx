@@ -9,7 +9,12 @@ import { isAdminAuthenticated } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
+import Link from "next/link";
 import { PasswordField } from "./password-field";
+
+const analyticsDashboardUrl =
+  process.env.NEXT_PUBLIC_VERCEL_ANALYTICS_URL ??
+  "https://vercel.com/xrkr80hds-projects/renee-nugent-judge/analytics?environment=all";
 
 function toDateTimeLocal(value: Date) {
   return value.toISOString().slice(0, 16);
@@ -83,9 +88,14 @@ export default async function AdminPage({
       <div className="container">
         <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <SectionHeading title="Campaign Admin" intro="Edit site content, manage events and endorsements, and review form submissions." />
-          <form action={logoutAction}>
-            <Button type="submit" variant="outline">Sign Out</Button>
-          </form>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="outline">
+              <Link href={analyticsDashboardUrl} target="_blank" rel="noreferrer">Open Analytics</Link>
+            </Button>
+            <form action={logoutAction}>
+              <Button type="submit" variant="outline">Sign Out</Button>
+            </form>
+          </div>
         </div>
 
         <div className="grid gap-6">

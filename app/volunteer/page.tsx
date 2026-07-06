@@ -1,11 +1,10 @@
 import { PageHero } from "@/components/page-hero";
 import { Section } from "@/components/section";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { volunteerAction } from "@/lib/actions";
-import { HandHeart } from "lucide-react";
+import { ChevronDown, HandHeart } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -44,11 +43,15 @@ export default async function VolunteerPage({
               <p className="mt-6 rounded-md border border-secondary bg-white p-4 font-semibold text-primary">Thank you. The campaign has received your volunteer form.</p>
             ) : null}
           </div>
-          <Card className="border-primary/12 shadow-sm">
-            <CardHeader>
-              <CardTitle>Volunteer Signup</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <details className="rounded-md border border-primary/12 bg-white shadow-sm [&[open]_.accordion-chevron]:rotate-180" open>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 rounded-t-md bg-primary px-6 py-4 text-primary-foreground">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-secondary">Secure Form</p>
+                <h3 className="font-serif text-2xl font-semibold">Volunteer Signup</h3>
+              </div>
+              <ChevronDown className="accordion-chevron size-6 shrink-0 text-secondary transition-transform duration-200" aria-hidden="true" />
+            </summary>
+            <div className="p-6">
               <form action={volunteerAction} className="flex flex-col gap-5">
                 <div className="grid gap-5 md:grid-cols-2">
                   <div className="flex flex-col gap-2">
@@ -97,8 +100,8 @@ export default async function VolunteerPage({
                 </fieldset>
                 <Button type="submit">Submit Volunteer Form</Button>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </details>
         </div>
       </Section>
     </>

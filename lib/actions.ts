@@ -1,5 +1,6 @@
 "use server";
 
+import { sendAlert } from "@/lib/alerts";
 import { clearAdminSession, createAdminSession, isAdminAuthenticated, validAdminPassword, validAdminUsername } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { revalidatePath } from "next/cache";
@@ -92,6 +93,24 @@ export async function volunteerAction(formData: FormData) {
     }
   });
 
+  await sendAlert({
+    type: "volunteer_signup",
+    title: "New Volunteer Signup",
+    path: "/volunteer",
+    occurredAt: new Date().toISOString(),
+    data: {
+      name: parsed.name,
+      email: parsed.email,
+      phone: parsed.phone || null,
+      address1: parsed.address1 || null,
+      address2: parsed.address2 || null,
+      city: parsed.city || null,
+      state: parsed.state || null,
+      zip: parsed.zip || null,
+      interests: parsed.interests
+    }
+  });
+
   redirect("/volunteer?success=1");
 }
 
@@ -110,6 +129,26 @@ export async function donationSubmissionAction(formData: FormData) {
   });
 
   await prisma.donationSubmission.create({ data: parsed });
+
+  await sendAlert({
+    type: "donation_submission",
+    title: "New Donor Reporting Submission",
+    path: "/donate",
+    occurredAt: new Date().toISOString(),
+    data: {
+      name: parsed.name,
+      email: parsed.email,
+      phone: parsed.phone || null,
+      amount: parsed.amount || null,
+      address1: parsed.address1,
+      address2: parsed.address2 || null,
+      city: parsed.city,
+      state: parsed.state,
+      zip: parsed.zip,
+      notes: parsed.notes || null
+    }
+  });
+
   redirect("/donate?success=1");
 }
 

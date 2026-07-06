@@ -66,3 +66,21 @@ For Vercel deployment:
 5. Set the same database environment variables in Vercel before deploying.
 
 Stripe donation checkout variables are prepared but checkout is intentionally disabled until the campaign has approved payment credentials and compliance language.
+
+## Notification Webhooks
+
+The app supports owner alerts for form submissions and page visits through a webhook.
+
+Set the following Vercel environment variables:
+
+- `ALERT_WEBHOOK_URL`: webhook endpoint that receives JSON alerts
+- `ALERT_OWNER_EMAIL`: destination owner email for alert payloads (defaults to `reneefor35jdc@gmail.com`)
+- `PAGE_VISIT_ALERTS_ENABLED`: `true` to enable page-visit alerts
+- `PAGE_VISIT_ALERT_THROTTLE_MINUTES`: throttle window per page (default `30`)
+- `NEXT_PUBLIC_VERCEL_ANALYTICS_URL`: analytics dashboard URL used by admin quick links
+
+When configured, the app sends alerts for:
+
+- Volunteer signups
+- Donor reporting submissions
+- Optional page visits (`/`, `/volunteer`, `/donate`, `/contact`)
