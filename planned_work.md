@@ -2,11 +2,20 @@
 
 ## Current Focus
 
+- Debug production data flow for volunteer submissions and admin API visibility.
 - Fix mobile responsive sizing so sections and containers get tighter on small screens instead of feeling larger.
 - Align every interior page with the homepage without oversized hero blocks.
 - Keep the local preview running from a clean production build on `http://localhost:3000`.
 
 ## Immediate Tasks
+
+1. Trace volunteer form submission from page code through server action/API and database write.
+2. Trace admin API reads for volunteer submissions and other admin data.
+3. Check Supabase/Postgres schema expectations against the app code and migration.
+4. Check Vercel project configuration, recent deployments, and runtime logs for missing env vars or database errors.
+5. Identify root cause before applying any fix; verify with the smallest decisive local or live check.
+
+## Previous Mobile Tasks
 
 1. Audit shared layout primitives: `PageHero`, `Section`, header, cards, and forms.
 2. Reduce mobile padding, type scale, and image hero height.
