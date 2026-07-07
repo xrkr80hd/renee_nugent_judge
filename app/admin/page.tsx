@@ -71,38 +71,31 @@ export default async function AdminPage({
     );
   }
 
-  const {
-    volunteers,
-    contacts,
-    donations,
-    events,
-    endorsements,
-    settings,
-    loadError
-  } = await (async () => {
+  async function loadSection<T>(name: string, loader: () => Promise<T>, fallback: T) {
     try {
-      const [volunteers, contacts, donations, events, endorsements, settings] = await Promise.all([
-        prisma.volunteer.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
-        prisma.contactSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 20 }),
-        prisma.donationSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
-        prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], take: 20 }),
-        prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], take: 20 }),
-        prisma.siteSetting.findMany({ orderBy: { key: "asc" } })
-      ]);
-
-      return { volunteers, contacts, donations, events, endorsements, settings, loadError: false };
-    } catch {
-      return {
-        volunteers: [],
-        contacts: [],
-        donations: [],
-        events: [],
-        endorsements: [],
-        settings: [],
-        loadError: true
-      };
+      return { value: await loader(), error: false };
+    } catch (error) {
+      console.error(`Admin dashboard failed to load ${name}.`, error);
+      return { value: fallback, error: true };
     }
-  })();
+  }
+
+  const [volunteersResult, contactsResult, donationsResult, eventsResult, endorsementsResult, settingsResult] = await Promise.all([
+    loadSection("volunteers", () => prisma.volunteer.findMany({ orderBy: { createdAt: "desc" }, take: 20 }), [] as typeof prisma.volunteer extends { findMany: (...args: any[]) => Promise<infer R> } ? R : never),
+    loadSection("contacts", () => prisma.contactSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 20 }), [] as typeof prisma.contactSubmission extends { findMany: (...args: any[]) => Promise<infer R> } ? R : never),
+    loadSection("donations", () => prisma.donationSubmission.findMany({ orderBy: { createdAt: "desc" }, take: 50 }), [] as typeof prisma.donationSubmission extends { findMany: (...args: any[]) => Promise<infer R> } ? R : never),
+    loadSection("events", () => prisma.event.findMany({ orderBy: [{ sortOrder: "asc" }, { startsAt: "asc" }], take: 20 }), [] as typeof prisma.event extends { findMany: (...args: any[]) => Promise<infer R> } ? R : never),
+    loadSection("endorsements", () => prisma.endorsement.findMany({ orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }], take: 20 }), [] as typeof prisma.endorsement extends { findMany: (...args: any[]) => Promise<infer R> } ? R : never),
+    loadSection("settings", () => prisma.siteSetting.findMany({ orderBy: { key: "asc" } }), [] as typeof prisma.siteSetting extends { findMany: (...args: any[]) => Promise<infer R> } ? R : never)
+  ]);
+
+  const volunteers = volunteersResult.value;
+  const contacts = contactsResult.value;
+  const donations = donationsResult.value;
+  const events = eventsResult.value;
+  const endorsements = endorsementsResult.value;
+  const settings = settingsResult.value;
+  const loadError = volunteersResult.error || contactsResult.error || donationsResult.error || eventsResult.error || endorsementsResult.error || settingsResult.error;
 
   const publishedEvents = events.filter((event) => event.isPublished);
   const publishedEndorsements = endorsements.filter((endorsement) => endorsement.isPublished);
