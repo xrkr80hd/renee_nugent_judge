@@ -67,10 +67,10 @@ export default async function HomePage() {
       <section aria-label="Renee Dugas Nugent for Judge" className="bg-primary text-primary-foreground">
         <h1 className="sr-only">{campaign.name} for Judge — {campaign.court}</h1>
         <Image
-          src="/images/renee-family-hero.jpg"
+          src="/images/renee-family-hero-updated.jpg"
           alt="Renee Dugas Nugent with her family. For Judge. A New Era."
           width={1536}
-          height={865}
+          height={864}
           sizes="100vw"
           className="mx-auto block h-auto w-full max-w-[1536px]"
           priority
