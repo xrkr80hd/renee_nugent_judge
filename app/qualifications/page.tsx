@@ -41,10 +41,10 @@ export default function QualificationsPage() {
           <div>
             <SectionHeading title="Education" intro="A foundation in psychology, law, and social work." />
             <Card>
-              <CardContent className="p-6">
-                <ul className="flex flex-col gap-3">
+              <CardContent className="p-4">
+                <ul className="divide-y">
                   {campaign.education.map((item) => (
-                    <li key={item} className="border-b pb-3 text-muted-foreground last:border-b-0">
+                    <li key={item} className="py-2 text-sm leading-6 text-muted-foreground first:pt-0 last:pb-0">
                       {item}
                     </li>
                   ))}

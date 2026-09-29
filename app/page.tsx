@@ -1,78 +1,99 @@
 import { Section, SectionHeading } from "@/components/section";
+import { ShareVideo } from "@/components/share-video";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { campaign } from "@/content/campaign";
-import { getHomepageHeadline, getPublishedEvents } from "@/lib/public-data";
+import { getPublishedEvents } from "@/lib/public-data";
 import { formatDate } from "@/lib/utils";
 import { ArrowRight, CalendarDays, HandHeart, Scale } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://reneefor35jdc.com";
+const videoDescription = "Watch Renee Dugas Nugent's campaign video for District Judge of the 35th Judicial District Court in Grant Parish, Louisiana.";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Watch Renee Dugas Nugent's Campaign Video",
+    description: campaign.seoDescription,
+    type: "video.other",
+    url: "/",
+    images: [{ url: "/images/renee-video-poster.jpg", width: 1280, height: 720, alt: "Renee Dugas Nugent campaign video" }],
+    videos: [{ url: new URL("/videos/renee-campaign.mp4", siteUrl).href, type: "video/mp4", width: 1280, height: 720 }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Watch Renee Dugas Nugent's Campaign Video",
+    description: campaign.seoDescription,
+    images: ["/images/renee-video-poster.jpg"]
+  }
+};
 
 export default async function HomePage() {
-  const [events, headline] = await Promise.all([getPublishedEvents(2), getHomepageHeadline()]);
+  const events = await getPublishedEvents(2);
 
   return (
     <>
-      <section className="civic-texture relative overflow-hidden bg-primary text-primary-foreground">
-        <div className="absolute inset-x-0 top-0 h-1 bg-secondary" aria-hidden="true" />
-        <div className="absolute -right-24 top-28 hidden h-72 w-72 rounded-full border border-secondary/30 lg:block" aria-hidden="true" />
-        <div className="container flex min-h-[auto] flex-col gap-8 pb-8 pt-0 md:min-h-[720px] md:gap-10 md:py-10 lg:grid lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:py-16">
-          <div className="relative -mx-4 w-[calc(100%+2rem)] max-w-none sm:mx-auto sm:w-full sm:max-w-[610px] lg:order-2">
-            <div className="absolute -inset-4 hidden border border-secondary/55 sm:block" aria-hidden="true" />
-            <div className="relative overflow-hidden rounded-lg bg-white shadow-judicial">
-              <Image
-                src="/images/RD_JUDGE.jpg"
-                alt="Renee Dugas Nugent"
-                width={1024}
-                height={1024}
-                className="aspect-[4/4.35] w-full rounded-none object-cover object-center sm:max-h-[560px] sm:rounded-lg md:aspect-[4/5]"
-                priority
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary via-primary/80 to-transparent p-6 pt-24">
-                <div className="border-l-4 border-secondary pl-5">
-                  <p className="font-serif text-4xl font-semibold">{campaign.slogan}</p>
-                  <p className="mt-2 text-lg font-bold text-secondary">{campaign.secondarySlogan}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-6 md:gap-8 md:py-8 lg:order-1">
-            <div className="flex flex-col gap-4 md:gap-5">
-              <p className="max-w-full text-xs font-semibold uppercase leading-6 tracking-[0.12em] text-secondary sm:text-sm md:tracking-[0.2em]">
-                {campaign.court}
-              </p>
-              <h1 className="max-w-4xl font-serif text-5xl font-semibold leading-[0.98] md:text-8xl md:leading-[0.94]">
-                {campaign.name}
-              </h1>
-              <p className="max-w-2xl text-2xl font-semibold leading-tight text-secondary md:text-5xl">
-                {headline}
-              </p>
-              <p className="max-w-2xl text-lg leading-8 text-primary-foreground/82 md:text-xl">{campaign.hero.body}</p>
-            </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/volunteer">
-                  Volunteer <ArrowRight data-icon="inline-end" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90">
-                <Link href="/donate">Donate</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/35 bg-transparent text-white hover:bg-white/10">
-                <Link href="/about">Learn More</Link>
-              </Button>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {campaign.highlights.map((item) => (
-                <div key={item} className="flex items-center gap-3 border-l-2 border-secondary bg-white/8 px-4 py-3 text-sm font-semibold text-white">
-                  <Scale className="size-5 text-secondary" aria-hidden="true" />
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "VideoObject",
+          name: "Renee Dugas Nugent Campaign Video",
+          description: videoDescription,
+          thumbnailUrl: new URL("/images/renee-video-poster.jpg", siteUrl).href,
+          contentUrl: new URL("/videos/renee-campaign.mp4", siteUrl).href,
+          url: new URL("/#campaign-video", siteUrl).href,
+          uploadDate: "2026-09-28T20:31:00-05:00",
+          duration: "PT1M59S",
+          inLanguage: "en-US"
+        }).replace(/</g, "\\u003c") }}
+      />
+      <section aria-label="Renee Dugas Nugent for Judge" className="bg-primary text-primary-foreground">
+        <h1 className="sr-only">{campaign.name} for Judge — {campaign.court}</h1>
+        <Image
+          src="/images/renee-family-hero.jpg"
+          alt="Renee Dugas Nugent with her family. For Judge. A New Era."
+          width={1536}
+          height={865}
+          sizes="100vw"
+          className="mx-auto block h-auto w-full max-w-[1536px]"
+          priority
+        />
+        <div className="container flex flex-wrap items-center justify-center gap-3 py-4">
+          <Button asChild variant="secondary"><Link href="/volunteer">Volunteer <ArrowRight aria-hidden="true" /></Link></Button>
+          <Button asChild className="bg-white text-primary hover:bg-white/90"><Link href="/donate">Donate</Link></Button>
+          <Button asChild variant="outline" className="border-white/35 bg-transparent text-white hover:bg-white/10"><Link href="/about">Learn More</Link></Button>
         </div>
       </section>
+
+      <Section className="bg-background">
+        <div id="campaign-video" className="container max-w-5xl scroll-mt-28">
+          <h2 id="campaign-video-heading" className="mb-6 font-serif text-3xl font-semibold md:text-5xl">
+            Watch Renee's Video
+          </h2>
+          <p className="mb-5 text-base leading-7 text-muted-foreground">{videoDescription}</p>
+          <div className="aspect-video overflow-hidden rounded-lg border border-primary/15 bg-black shadow-judicial">
+            <video
+              src="/videos/renee-campaign.mp4"
+              poster="/images/renee-video-poster.jpg"
+              aria-label="Renee Dugas Nugent campaign video"
+              className="h-full w-full border-0"
+              autoPlay
+              muted
+              playsInline
+              controls
+              preload="metadata"
+            >
+              Your browser does not support embedded video.
+            </video>
+          </div>
+          <ShareVideo />
+          <p className="mt-1 text-sm text-muted-foreground">Video starts muted. Use the player controls to turn on sound.</p>
+        </div>
+      </Section>
 
       <Section className="bg-white">
         <div className="container grid items-start gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10">

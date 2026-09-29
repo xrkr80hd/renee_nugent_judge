@@ -20,7 +20,7 @@ const sans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://reneefor35jdc.com"),
   title: {
     default: `${campaign.name} for Judge`,
     template: `%s | ${campaign.name} for Judge`
