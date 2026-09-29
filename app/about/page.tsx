@@ -32,10 +32,10 @@ export default function AboutPage() {
           <div className="relative">
             <div className="absolute inset-5 bg-secondary/18" aria-hidden="true" />
             <Image
-              src="/images/ABT_RNEE.jpg"
+              src="/images/renee-about-updated.jpg"
               alt="Renee Dugas Nugent"
-              width={1024}
-              height={1024}
+              width={1229}
+              height={1536}
               className="relative aspect-[4/5] w-full rounded-md object-cover shadow-judicial"
               priority
             />
