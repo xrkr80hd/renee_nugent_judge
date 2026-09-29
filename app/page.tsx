@@ -1,5 +1,8 @@
 import { Section, SectionHeading } from "@/components/section";
-import { ShareVideo } from "@/components/share-video";
+import { VideoCarousel } from "@/components/video-carousel";
+import { getVideos } from "@/lib/video-data";
+
+export const dynamic = "force-dynamic";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { campaign } from "@/content/campaign";
@@ -13,7 +16,7 @@ import type { Metadata } from "next";
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://reneefor35jdc.com";
 const videoDescription = "Watch Renee Dugas Nugent's campaign video for District Judge of the 35th Judicial District Court in Grant Parish, Louisiana.";
 
-export const metadata: Metadata = {
+const videoMetadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     title: "Watch Renee Dugas Nugent's Campaign Video",
@@ -31,12 +34,22 @@ export const metadata: Metadata = {
   }
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  const videos = await getVideos();
+  if (videos.some(video => video.id === "original")) return videoMetadata;
+  return {
+    alternates: { canonical: "/" },
+    openGraph: { title: "Renee Dugas Nugent for Judge", description: campaign.seoDescription, type: "website", url: "/" },
+    twitter: { card: "summary", title: "Renee Dugas Nugent for Judge", description: campaign.seoDescription }
+  };
+}
+
 export default async function HomePage() {
-  const events = await getPublishedEvents(2);
+  const [events, videos] = await Promise.all([getPublishedEvents(2), getVideos()]);
 
   return (
     <>
-      <script
+      {videos.some(video => video.id === "original") && <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
@@ -50,7 +63,7 @@ export default async function HomePage() {
           duration: "PT1M59S",
           inLanguage: "en-US"
         }).replace(/</g, "\\u003c") }}
-      />
+      />}
       <section aria-label="Renee Dugas Nugent for Judge" className="bg-primary text-primary-foreground">
         <h1 className="sr-only">{campaign.name} for Judge — {campaign.court}</h1>
         <Image
@@ -69,31 +82,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <Section className="bg-background">
+      {videos.length > 0 && <Section className="bg-background">
         <div id="campaign-video" className="container max-w-5xl scroll-mt-28">
           <h2 id="campaign-video-heading" className="mb-6 font-serif text-3xl font-semibold md:text-5xl">
             Watch Renee's Video
           </h2>
           <p className="mb-5 text-base leading-7 text-muted-foreground">{videoDescription}</p>
-          <div className="aspect-video overflow-hidden rounded-lg border border-primary/15 bg-black shadow-judicial">
-            <video
-              src="/videos/renee-campaign.mp4"
-              poster="/images/renee-video-poster.jpg"
-              aria-label="Renee Dugas Nugent campaign video"
-              className="h-full w-full border-0"
-              autoPlay
-              muted
-              playsInline
-              controls
-              preload="metadata"
-            >
-              Your browser does not support embedded video.
-            </video>
-          </div>
-          <ShareVideo />
-          <p className="mt-1 text-sm text-muted-foreground">Video starts muted. Use the player controls to turn on sound.</p>
+          <VideoCarousel videos={videos} />
         </div>
-      </Section>
+      </Section>}
 
       <Section className="bg-white">
         <div className="container grid items-start gap-6 lg:grid-cols-[0.85fr_1.15fr] lg:gap-10">

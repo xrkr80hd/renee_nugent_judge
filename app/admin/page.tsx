@@ -1,3 +1,5 @@
+import { VideoManagement } from "@/components/video-management";
+import { parseVideos, VIDEO_KEY } from "@/lib/videos";
 import { Section, SectionHeading } from "@/components/section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -97,6 +99,9 @@ export default async function AdminPage({
   const settings = settingsResult.value;
   const loadError = volunteersResult.error || contactsResult.error || donationsResult.error || eventsResult.error || endorsementsResult.error || settingsResult.error;
 
+  let videos;
+  try { videos = settingsResult.error ? null : parseVideos(settings.find(setting => setting.key === VIDEO_KEY)?.value); } catch { videos = null; }
+
   const publishedEvents = events.filter((event) => event.isPublished);
   const publishedEndorsements = endorsements.filter((endorsement) => endorsement.isPublished);
 
@@ -122,7 +127,10 @@ export default async function AdminPage({
         ) : null}
 
         <div className="grid gap-6">
-          <AccordionSection title="Admin Tutorial" defaultOpen>
+          <AccordionSection title="Video Management" defaultOpen>
+            {videos ? <VideoManagement videos={videos} /> : <p role="alert" className="text-red-700">The video list could not be loaded. Refresh or check the database connection before editing.</p>}
+          </AccordionSection>
+          <AccordionSection title="Admin Tutorial">
             <div className="grid gap-4 rounded-md border bg-muted/20 p-4 text-sm leading-7">
               <p className="font-semibold text-foreground">How this website works (quick guide)</p>
               <p>
@@ -332,7 +340,7 @@ export default async function AdminPage({
 
           <AccordionSection title="Site Settings">
             <div className="grid gap-4 md:grid-cols-3">
-              {settings.map((setting) => (
+              {settings.filter(setting => setting.key !== VIDEO_KEY).map((setting) => (
                 <form key={setting.key} action={saveSettingAction} className="flex flex-col gap-3">
                   <Label htmlFor={setting.key}>{setting.key}</Label>
                   <input type="hidden" name="key" value={setting.key} />

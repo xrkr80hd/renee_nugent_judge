@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { Share2 } from "lucide-react";
 
-export function ShareVideo() {
+export function ShareVideo({ videoId, title = "Renee Dugas Nugent — Campaign Video" }: { videoId?: string; title?: string }) {
   const [message, setMessage] = useState("");
   const [manualUrl, setManualUrl] = useState("");
 
   async function share(copyOnly = false) {
-    const url = new URL("/#campaign-video", window.location.origin).href;
+    const url = new URL(videoId ? `/#video-${encodeURIComponent(videoId)}` : "/#campaign-video", window.location.origin).href;
     setMessage("");
     setManualUrl("");
     if (!copyOnly && navigator.share) {
       try {
-        await navigator.share({ title: "Renee Dugas Nugent — Campaign Video", url });
+        await navigator.share({ title, url });
         return;
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") return;
